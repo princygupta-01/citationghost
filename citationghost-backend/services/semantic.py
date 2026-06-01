@@ -1,4 +1,5 @@
 import asyncio
+import hashlib
 import os
 from typing import Optional
 from urllib.parse import quote
@@ -13,6 +14,7 @@ FIELDS = "abstract,title,year,authors"
 RETRY_DELAYS = (1, 2, 4)
 
 _abstract_cache: dict[str, dict] = {}
+_semantic_cache: dict[str, dict] = {}
 
 
 def _headers() -> dict[str, str]:
@@ -21,12 +23,19 @@ def _headers() -> dict[str, str]:
 
 
 async def fetch_abstract(doi: Optional[str] = None, title: Optional[str] = None) -> dict:
+    cache_key_raw = (doi or title or "").strip().lower()
+    cache_key = hashlib.md5(cache_key_raw.encode()).hexdigest()
+    if cache_key in _semantic_cache:
+        return _semantic_cache[cache_key]
+
     if doi:
         doi = normalize_doi(doi)
 
-    cache_key = (doi or title or "").lower().strip()
-    if cache_key in _abstract_cache:
-        return _abstract_cache[cache_key]
+    cache_key_legacy = (doi or title or "").lower().strip()
+    if cache_key_legacy in _abstract_cache:
+        result = _abstract_cache[cache_key_legacy]
+        _semantic_cache[cache_key] = result
+        return result
 
     result = {"found": False, "abstract": None}
 
@@ -46,15 +55,18 @@ async def fetch_abstract(doi: Optional[str] = None, title: Optional[str] = None)
                             "abstract": data["abstract"],
                             "title": data.get("title"),
                         }
-                        _abstract_cache[cache_key] = result
+                        _abstract_cache[cache_key_legacy] = result
+                        _semantic_cache[cache_key] = result
                         return result
                 elif response.status_code == 429:
                     result = {"found": False, "abstract": None, "reason": "rate_limited"}
-                    _abstract_cache[cache_key] = result
+                    _abstract_cache[cache_key_legacy] = result
+                    _semantic_cache[cache_key] = result
                     return result
                 elif response.status_code == 403:
                     result = {"found": False, "abstract": None, "reason": "Semantic Scholar returned 403"}
-                    _abstract_cache[cache_key] = result
+                    _abstract_cache[cache_key_legacy] = result
+                    _semantic_cache[cache_key] = result
                     return result
             except Exception as exc:
                 result = {"found": False, "abstract": None, "reason": str(exc)}
@@ -85,7 +97,8 @@ async def fetch_abstract(doi: Optional[str] = None, title: Optional[str] = None)
             except Exception as exc:
                 result = {"found": False, "abstract": None, "reason": str(exc)}
 
-    _abstract_cache[cache_key] = result
+    _abstract_cache[cache_key_legacy] = result
+    _semantic_cache[cache_key] = result
     return result
 
 

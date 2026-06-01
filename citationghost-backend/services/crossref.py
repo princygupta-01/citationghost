@@ -1,3 +1,4 @@
+import hashlib
 import re
 from difflib import SequenceMatcher
 from typing import Optional
@@ -14,6 +15,7 @@ HEADERS = {
 _doi_cache: dict[str, dict] = {}
 _title_cache: dict[str, dict] = {}
 _bibliographic_cache: dict[str, dict] = {}
+_crossref_cache: dict[str, dict] = {}
 
 MIN_TITLE_SIMILARITY = 0.75
 VERIFIED_TITLE_SIMILARITY = 0.85
@@ -69,9 +71,16 @@ async def search_title(title: str) -> dict:
     if not title:
         return {"exists": False}
 
+    # Cache key based on normalized title
+    cache_key = hashlib.md5(title.strip().lower().encode()).hexdigest()
+    if cache_key in _crossref_cache:
+        return _crossref_cache[cache_key]
+
     key = title.lower().strip()
     if key in _title_cache:
-        return _title_cache[key]
+        result = _title_cache[key]
+        _crossref_cache[cache_key] = result
+        return result
 
     try:
         async with httpx.AsyncClient(timeout=8.0) as client:
@@ -101,6 +110,7 @@ async def search_title(title: str) -> dict:
         result = {"exists": False, "reason": str(exc)}
 
     _title_cache[key] = result
+    _crossref_cache[cache_key] = result
     return result
 
 
