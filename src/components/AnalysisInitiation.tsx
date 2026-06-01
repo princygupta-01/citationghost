@@ -285,7 +285,7 @@ References
             appendLog('[INFO] Offline fallback scan complete.');
             
             // Generate a local mock report using the existing function
-            const mockReport = generateMockReport(fileName);
+            const mockReport = generateNewReport(fileName);
             // Mark it as partial offline mode so the user/UI knows but still runs smoothly
             mockReport.analysisMode = 'PARTIAL';
             
