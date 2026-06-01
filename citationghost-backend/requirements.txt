@@ -6,7 +6,4 @@ python-dotenv==1.0.1
 pydantic==2.7.0
 redis==5.0.7
 pypdf==4.3.1
-chromadb==1.5.9
-sentence-transformers==3.0.1
-transformers==4.41.2
-huggingface-hub==0.36.0
+rapidfuzz==3.9.3
