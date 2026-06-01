@@ -1,7 +1,7 @@
 # 👻 CitationGhost — Academic Integrity Re-imagined
 
 > **"CitationGhost verifies whether cited sources actually exist and genuinely support the claims made inside academic manuscripts."**
-
+link to play : https://citationghost-wlnr.onrender.com/
 [![API Status](https://img.shields.io/badge/API-Active-emerald?style=for-the-badge&logo=fastapi)](http://localhost:8000/docs)
 [![Frontend](https://img.shields.io/badge/Frontend-Vite_React-c084fc?style=for-the-badge&logo=react)](http://localhost:3000)
 [![Tech Stack](https://img.shields.io/badge/ML_Engine-Groq_Llama3.3-ff6b35?style=for-the-badge&logo=meta)](https://groq.com)
