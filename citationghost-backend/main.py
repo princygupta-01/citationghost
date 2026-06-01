@@ -641,9 +641,37 @@ def _frontend_citation(citation: CitationResult) -> FrontendCitation:
 
 
 def _compute_integrity_score(stats: dict[str, int]) -> int:
-    effective_total = max(1, stats["total"] - stats.get("non_citation", 0) - stats.get("invalid_match", 0))
-    verified_weight = stats["clean"] + stats.get("doi_verified", 0) * 0.7
-    return max(0, min(100, round((verified_weight / effective_total) * 100)))
+    """
+    Deterministic score based purely on hard citation facts.
+    Same PDF will always produce the same score regardless of LLM variance.
+
+    Formula:
+      40% - Citation resolution rate (how many refs were found in CrossRef/Semantic Scholar)
+      30% - DOI validity rate (how many had a valid, confirmed DOI)
+      20% - Non-contradiction rate (penalises contradicted + ghost citations)
+      10% - Completeness (penalises unverified/missing refs)
+    """
+    total = max(1, stats["total"] - stats.get("non_citation", 0))
+
+    # Hard facts only — no LLM opinion in these numbers
+    resolved      = stats.get("clean", 0) + stats.get("doi_verified", 0) + stats.get("weak_evidence", 0)
+    doi_valid     = stats.get("doi_verified", 0) + stats.get("clean", 0)
+    contradicted  = stats.get("contradicted", 0) + stats.get("ghost", 0) + stats.get("fabricated", 0)
+    unverified    = stats.get("unverified", 0) + stats.get("invalid_match", 0)
+
+    resolution_rate      = resolved / total
+    doi_rate             = doi_valid / total
+    non_contradiction    = max(0, 1 - (contradicted / total))
+    completeness         = max(0, 1 - (unverified / total))
+
+    score = (
+        resolution_rate   * 40 +
+        doi_rate          * 30 +
+        non_contradiction * 20 +
+        completeness      * 10
+    )
+
+    return max(0, min(100, round(score)))
 
 
 def _first_present(*values: str | None) -> str:
