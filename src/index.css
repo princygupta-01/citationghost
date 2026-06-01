@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+@theme {
+  --color-dark: #080810;
+  --color-primary: #FF2D6B;
+  --color-secondary: #FF6B35;
+  --color-glow-purple: #7B2FBE;
+  --color-glass-bg: rgba(255, 255, 255, 0.04);
+  --color-glass-border: rgba(255, 255, 255, 0.08);
+  --font-display: "Clash Display", "Plus Jakarta Sans", sans-serif;
+  --font-body: "Satoshi", "Inter", sans-serif;
+  --font-plus-jakarta: "Plus Jakarta Sans", sans-serif;
+  --font-inter: "Inter", sans-serif;
+  --font-geist: "Geist", "Inter", sans-serif;
+  --font-geist-mono: "Geist Mono", monospace;
+}
+
+@layer utilities {
+  .glass-card {
+    background: rgba(255, 255, 255, 0.03);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: border-color 0.4s ease, background 0.4s ease, box-shadow 0.4s cursor;
+  }
+
+  .glass-panel {
+    backdrop-filter: blur(20px);
+    background: rgba(31, 14, 19, 0.40);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .neon-glow-pink {
+    box-shadow: 0 0 20px rgba(255, 74, 141, 0.3);
+  }
+
+  .glow-text-pink {
+    text-shadow: 0 0 10px rgba(255, 74, 141, 0.5);
+  }
+
+  .bg-wave-gradient {
+    background: linear-gradient(90deg, #FF4D8D, #7B2BF9, #FF8A00, #FF4D8D);
+    background-size: 200% 100%;
+  }
+
+  .scan-line {
+    width: 100%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, #ffb1c4, transparent);
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: scan 3s linear infinite;
+    box-shadow: 0 0 15px #ffb1c4;
+    z-index: 20;
+  }
+}
+
+@keyframes scan {
+  0% { top: 0%; opacity: 0; }
+  5% { opacity: 1; }
+  95% { opacity: 1; }
+  100% { top: 100%; opacity: 0; }
+}
+
+@keyframes pulse-red {
+  0%, 100% { opacity: 1; filter: drop-shadow(0 0 10px #ff4a8d); }
+  50% { opacity: 0.6; filter: drop-shadow(0 0 20px #ba005b); }
+}
+
+.pulsing-hallucination {
+  animation: pulse-red 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+}
+
+.scan-line {
+  animation: scan 3s linear infinite;
+}
+
+body {
+  background-color: #080810;
+  font-family: "Satoshi", sans-serif;
+  color: #FFFFFF;
+  overflow-x: hidden;
+}
+
+/* Custom scrollbars */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 74, 141, 0.3);
+}

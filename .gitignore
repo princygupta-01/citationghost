@@ -1,0 +1,39 @@
+# Node
+node_modules/
+dist/
+build/
+coverage/
+
+# Python Virtual Environments
+venv/
+**/venv/
+.venv/
+**/.venv/
+env/
+**/env/
+
+# Python Cache & Compiled files
+__pycache__/
+**/__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.pytest_cache/
+.ipynb_checkpoints/
+
+# Vector Store / Local DB Caches
+**/chroma_db/
+chroma_db/
+
+# Environmental credentials
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+!.env.example
+
+# Logs and OS temp files
+*.log
+.DS_Store
+Thumbs.db
